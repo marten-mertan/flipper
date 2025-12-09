@@ -10,7 +10,7 @@
           to="/"
           :class="$style.link"
         >
-          Nuxt3 Template
+          Flipper
         </NuxtLink>
       </div>
       <LayoutHeaderMenu />
