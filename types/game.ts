@@ -4,8 +4,8 @@ export type IGameConfig = {
 }
 
 export type IGameState = {
-  optionsRows: number
-  optionsCols: number
+  settingsRows: number
+  settingsCols: number
   rows: number
   cols: number
   grid: ICell[][]

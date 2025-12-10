@@ -1,17 +1,23 @@
 <script setup lang="ts">
 const gameStore = useGameStore()
+
+const sollutionPreview = computed(() => {
+  return gameStore.state.solution
+    .map(p => `(${p.x},${p.y})`)
+    .join(' → ')
+})
 </script>
 
 <template>
-  <div :class="$style.GameControls">
+  <div :class="$style.GameSettings">
     <UiInputSlider
-      v-model="gameStore.state.optionsRows"
+      v-model="gameStore.state.settingsRows"
       label="Rows"
       :min="3"
       :max="16"
     />
     <UiInputSlider
-      v-model="gameStore.state.optionsCols"
+      v-model="gameStore.state.settingsCols"
       label="Cols"
       :min="3"
       :max="16"
@@ -27,12 +33,12 @@ const gameStore = useGameStore()
       Show solution walk
     </UiButton>
 
-    <div v-if="gameStore.state.showSolution">
+    <div v-if="gameStore.state.showSolution && sollutionPreview">
       <div :class="$style.text">
         Solution walk (preview)
       </div>
       <div :class="$style.text">
-        {{ gameStore.state.solution.map(p => `(${p.x},${p.y})`).join(' → ') }}
+        {{ sollutionPreview }}
       </div>
     </div>
 
@@ -48,7 +54,7 @@ const gameStore = useGameStore()
 </template>
 
 <style lang="scss" module>
-  .GameControls {
+  .GameSettings {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;

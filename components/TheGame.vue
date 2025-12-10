@@ -11,7 +11,7 @@ onMounted(() => {
 
 <template>
   <div :class="$style.TheGame">
-    <GameControls />
+    <GameSettings />
     <GameGrid :class="$style.grid" />
     <GameInfo />
   </div>

@@ -7,8 +7,8 @@ export const useGameStore = defineStore('gameStore', () => {
     initCols: 9,
   }
   const state = ref<IGameState>({
-    optionsRows: CONFIG.initRows,
-    optionsCols: CONFIG.initCols,
+    settingsRows: CONFIG.initRows,
+    settingsCols: CONFIG.initCols,
     rows: CONFIG.initRows,
     cols: CONFIG.initCols,
     grid: [],
@@ -34,8 +34,8 @@ export const useGameStore = defineStore('gameStore', () => {
 
   // generate a solvable grid by producing a random walk that covers all cells at least once.
   function generate() {
-    state.value.rows = state.value.optionsRows
-    state.value.cols = state.value.optionsCols
+    state.value.rows = state.value.settingsRows
+    state.value.cols = state.value.settingsCols
     initEmptyGrid(state.value.rows, state.value.cols)
     const walk = producePartialWalk(state.value.rows, state.value.cols)
     state.value.solution = [...walk]
