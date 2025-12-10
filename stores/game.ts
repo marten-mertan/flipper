@@ -37,7 +37,7 @@ export const useGameStore = defineStore('gameStore', () => {
     state.value.rows = state.value.optionsRows
     state.value.cols = state.value.optionsCols
     initEmptyGrid(state.value.rows, state.value.cols)
-    const walk = produceCoveringWalk(state.value.rows, state.value.cols)
+    const walk = producePartialWalk(state.value.rows, state.value.cols)
     state.value.solution = [...walk]
 
     // compute visit counts
@@ -49,23 +49,20 @@ export const useGameStore = defineStore('gameStore', () => {
         const v = counts[y][x]
         const cell = state.value.grid[y][x]
         cell.visits = v
-        if (v === 1) {
-          cell.required = 1
-          cell.remaining = 1
-        }
-        else if (v === 2) {
-          cell.required = 2
-          cell.remaining = 2
-        }
-        else {
+        if (v > 2) {
           cell.required = Infinity
           cell.remaining = Infinity
+        }
+        else {
+          cell.required = v
+          cell.remaining = v
         }
       }
     }
 
     // place player at first walk position
     const start = walk[0]
+    stepOnCell(start.x, start.y)
 
     state.value.player.x = start.x
     state.value.player.y = start.y
@@ -73,40 +70,48 @@ export const useGameStore = defineStore('gameStore', () => {
     state.value.showSolution = false
   }
 
-  // produce a random walk that keeps going until every cell visited at least once
-  function produceCoveringWalk(R: number, C: number): IPosition[] {
-    // start at random
+  function producePartialWalk(R: number, C: number, targetFraction: number = 0.8): IPosition[] {
+    // targetFraction: fraction of total cells to cover in the walk
+    // e.g., 0.5 means cover half the cells at least once
+    const total = R * C
+    const targetLength = Math.max(1, Math.floor(total * targetFraction))
+
     const sx = Math.floor(Math.random() * C)
     const sy = Math.floor(Math.random() * R)
+
     const visited = Array.from({ length: R }, () => Array(C).fill(false))
-    const walk = [{ x: sx, y: sy }]
+    const walk: IPosition[] = [{ x: sx, y: sy }]
     visited[sy][sx] = true
-    let remaining = R * C - 1
 
-    // do a random walk biased to visit unvisited neighbors first
+    let length = 1
     let attempts = 0
-    while (remaining > 0 && attempts < 50000) {
-      const cur = walk[walk.length - 1]
-      const neighbors: IPosition[] = shuffle(neighborsOf(cur.x, cur.y, C, R))
 
-      // prefer neighbors that are unvisited
-      let chosen = neighbors.find((n: IPosition) => !visited[n.y][n.x])
-      if (!chosen) chosen = neighbors[Math.floor(Math.random() * neighbors.length)]
+    while (length < targetLength && attempts < 50000) {
+      const cur = walk[walk.length - 1]
+      const neighbors = shuffle(neighborsOf(cur.x, cur.y, C, R))
+
+      // priority to unvisited neighbors
+      let chosen = neighbors.find(n => !visited[n.y][n.x])
+      if (!chosen) {
+        // if all neighbors visited, pick random
+        chosen = neighbors[Math.floor(Math.random() * neighbors.length)]
+      }
 
       walk.push(chosen)
       if (!visited[chosen.y][chosen.x]) {
         visited[chosen.y][chosen.x] = true
-        remaining--
       }
+
+      length++
       attempts++
     }
 
-    // optionally continue the walk a bit to create some cells with 2+ visits (adds variety)
-    const extraSteps = Math.floor(Math.random() * (R * C / 2))
+    // add some extra random steps to increase complexity
+    const extraSteps = Math.floor(Math.random() * (targetLength / 3))
     for (let i = 0; i < extraSteps; i++) {
-      const cur: IPosition = walk[walk.length - 1]
-      const neighbors: IPosition[] = neighborsOf(cur.x, cur.y, C, R)
-      const chosen: IPosition = neighbors[Math.floor(Math.random() * neighbors.length)]
+      const cur = walk[walk.length - 1]
+      const neighbors = neighborsOf(cur.x, cur.y, C, R)
+      const chosen = neighbors[Math.floor(Math.random() * neighbors.length)]
       walk.push(chosen)
     }
 
@@ -170,6 +175,7 @@ export const useGameStore = defineStore('gameStore', () => {
     for (const c of flatCells.value) {
       c.remaining = Number.isFinite(c.required) ? c.required : Infinity
     }
+    stepOnCell(state.value.player.x, state.value.player.y)
   }
 
   const remainingNeeded = computed(() => {

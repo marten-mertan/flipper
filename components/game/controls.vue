@@ -37,7 +37,12 @@ const gameStore = useGameStore()
     </div>
 
     <div :class="$style.text">
-      How generation works (guaranteed solvable): the generator first creates a random walk that visits every cell at least once. Then it derives required visit counts from how many times the walk visited each cell: 1, 2, or &infin; (if visited 3+ times it becomes infinite). That means the generated board always has the walk shown in the "Show solution walk" as a valid solution.
+      How generation works (guaranteed solvable): <br>
+      1. A random walk is generated that covers at least 80% of the grid cells. <br>
+      2. The cells visited by the walk are flipped to "on". <br>
+      3. The player starts at the beginning of the walk. <br>
+      4. The goal is to step on all "on" cells to turn them "off". <br>
+      5. The solution walk is provided as a hint. <br>
     </div>
   </div>
 </template>
