@@ -9,7 +9,7 @@
 
 <style lang="scss" module>
   .IndexPage {
-    padding-top: 10rem;
-    padding-bottom: 10rem;
+    padding-top: 4.8rem;
+    padding-bottom: 4.8rem;
   }
 </style>

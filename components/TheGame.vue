@@ -4,23 +4,22 @@ import { useGameStore } from '~/stores/game'
 const gameStore = useGameStore()
 
 onMounted(() => {
-  gameStore.generate()
+  gameStore.startNewGame()
   window.addEventListener('keydown', gameStore.onKey)
 })
 </script>
 
 <template>
   <div :class="$style.TheGame">
-    <GameSettings />
+    <GameAside />
     <GameGrid :class="$style.grid" />
-    <GameInfo />
   </div>
 </template>
 
 <style lang="scss" module>
   .TheGame {
     display: grid;
-    grid-template-columns: 24rem 1fr 20rem;
+    grid-template-columns: 46rem 1fr;
     gap: 2rem;
     align-items: start;
   }

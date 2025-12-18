@@ -10,6 +10,27 @@ const sollutionPreview = computed(() => {
 
 <template>
   <div :class="$style.GameSettings">
+    <div :class="$style.text">
+      <div>Remaining required cells: <strong>{{ gameStore.remainingNeeded }}</strong></div>
+      <div>Moves made: <strong>{{ gameStore.state.moves }}</strong></div>
+      <div>Win streak: <strong>{{ gameStore.state.winStreak }}</strong></div>
+    </div>
+
+    <div :class="$style.btns">
+      <UiButton
+        fullWidth
+        @click="gameStore.startNewGame"
+      >
+        New
+      </UiButton>
+      <UiButton
+        fullWidth
+        @click="gameStore.resetLevel"
+      >
+        Again
+      </UiButton>
+    </div>
+
     <UiInputSlider
       v-model="gameStore.state.settingsRows"
       label="Rows"
@@ -23,16 +44,6 @@ const sollutionPreview = computed(() => {
       :max="16"
     />
 
-    <UiButton @click="gameStore.generate">
-      Generate solvable field
-    </UiButton>
-    <UiButton @click="gameStore.resetPlayer">
-      Reset player
-    </UiButton>
-    <UiButton @click="gameStore.toggleShowSolution">
-      Show solution walk
-    </UiButton>
-
     <div v-if="gameStore.state.showSolution && sollutionPreview">
       <div :class="$style.text">
         Solution walk (preview)
@@ -40,15 +51,6 @@ const sollutionPreview = computed(() => {
       <div :class="$style.text">
         {{ sollutionPreview }}
       </div>
-    </div>
-
-    <div :class="$style.text">
-      How generation works (guaranteed solvable): <br>
-      1. A random walk is generated that covers at least 80% of the grid cells. <br>
-      2. The cells visited by the walk are flipped to "on". <br>
-      3. The player starts at the beginning of the walk. <br>
-      4. The goal is to step on all "on" cells to turn them "off". <br>
-      5. The solution walk is provided as a hint. <br>
     </div>
   </div>
 </template>
@@ -58,6 +60,12 @@ const sollutionPreview = computed(() => {
     display: flex;
     flex-direction: column;
     gap: 1.2rem;
+  }
+
+  .btns {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: space-between;
   }
 
   .text {

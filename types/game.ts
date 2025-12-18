@@ -23,6 +23,7 @@ export type IGameState = {
     y: number
   }[]
   showSolution: boolean
+  winStreak: number
 }
 
 export type ICell = {

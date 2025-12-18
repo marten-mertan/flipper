@@ -17,6 +17,7 @@ export const useGameStore = defineStore('gameStore', () => {
     moves: 0,
     solution: [],
     showSolution: false,
+    winStreak: 0,
   })
 
   const flatCells = computed(() => state.value.grid.flat())
@@ -136,6 +137,20 @@ export const useGameStore = defineStore('gameStore', () => {
     return p
   }
 
+  function isWin() {
+    return remainingNeeded.value === 0
+  }
+
+  function nextLevel() {
+    state.value.winStreak++
+    generate()
+  }
+
+  function startNewGame() {
+    state.value.winStreak = 0
+    generate()
+  }
+
   function move(dir: IDirection) {
     const nx = state.value.player.x + (dir === 'left' ? -1 : dir === 'right' ? 1 : 0)
     const ny = state.value.player.y + (dir === 'up' ? -1 : dir === 'down' ? 1 : 0)
@@ -172,6 +187,11 @@ export const useGameStore = defineStore('gameStore', () => {
     state.value.player.runTimer = window.setTimeout(() => {
       state.value.player.state = 'idle'
       state.value.player.runTimer = null
+
+      // if player has reached the end, trigger win
+      if (isWin()) {
+        nextLevel()
+      }
     }, CONFIG.moveDurationMs)
   }
 
@@ -183,7 +203,7 @@ export const useGameStore = defineStore('gameStore', () => {
     }
   }
 
-  function resetPlayer() {
+  function resetLevel() {
     if (state.value.solution.length) {
       const start = state.value.solution[0]
       state.value.player.x = start.x
@@ -234,9 +254,9 @@ export const useGameStore = defineStore('gameStore', () => {
 
   return {
     state,
-    generate,
+    startNewGame,
     onKey,
-    resetPlayer,
+    resetLevel,
     flatCells,
     remainingNeeded,
     cellLabel,
