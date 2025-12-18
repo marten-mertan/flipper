@@ -18,13 +18,13 @@ const sollutionPreview = computed(() => {
 
     <div :class="$style.btns">
       <UiButton
-        fullWidth
+        full-width
         @click="gameStore.startNewGame"
       >
         New
       </UiButton>
       <UiButton
-        fullWidth
+        full-width
         @click="gameStore.resetLevel"
       >
         Again
